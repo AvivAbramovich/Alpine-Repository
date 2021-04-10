@@ -12,6 +12,7 @@ RUN apk add abuild
 
 RUN pip install -r requirements.txt
 
+ENV ARCH x86_64
 ENV REPOISOTRY_PATH /repo
 ENV PRIV_KEY_PATH ''
 ENV MAX_CONTENT_LENGTH ''

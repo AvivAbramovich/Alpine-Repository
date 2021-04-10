@@ -24,7 +24,7 @@ services:
       context: src
       dockerfile: httpd.Dockerfile
     volumes:
-    - "./tmp/repo/x86_64:/mnt/repo"
+    - "./tmp/repo:/usr/local/apache2/htdocs/"
     environment: 
     - REPOISOTRY_PATH=/mnt/repo
     - CLEAN_ON_STRARTUP=TRUE

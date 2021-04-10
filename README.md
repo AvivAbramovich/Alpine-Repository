@@ -6,7 +6,7 @@ Deploy your own Alpine Linux packages repository with uploading server and auto 
 
 ## Supported tags
 * `latest`, `indexer-0.1`, `indexer`
-* `httpd-0.1`, `0.1`
+* `httpd-0.1`, `0.1` **Not available yet**
 
 ## Image Variants
 - `inderxer` - Only the `indexer`, description below in [Indexer](#Indexer)
@@ -57,8 +57,9 @@ Now, configure your alpine machine/container to use your new repository
 
 ## Indexer's Configurations
 
-- `REPOISOTRY_PATH` - path inside the container to repository (include the architecture), e.g. `/repo/x86_64`. default: `/repo`
+- `REPOISOTRY_PATH` - path inside the container to repository (include the architecture), e.g. `/repo/x86_64`. default: `/repo` in indexer. In the httpd variant, it should be fixed to `/usr/local/apache2/htdocs/${ARCH}`
 - `PRIV_KEY_PATH` - path to private key file. Add this option to sign the `APKINDEX.tar.gz` the indexer crates and make the repository trusted.
+- `ARCH` - Architecture of the repository. default: `x86_64`
 - `CLEAN_ON_STRARTUP` - Set to `TRUE` to remove all files from repository directory when starting the `indexer`. Mainly for debugging.
 - `MAX_CONTENT_LENGTH` - the maximum file content size of upcoming requests for the indexer.
 - `INDEXER_PORT` - a port which the indexer app listens on. default: 80 in only `indexer` variant, 5000 in `indexer + httpd`

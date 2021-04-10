@@ -80,7 +80,7 @@ def main(argv=None):
     args_parser.add_argument('-p', help='listening port', type=int, default=80)
     args_parser.add_argument('--clean', help='clean all files from repository folder before begin listening', action='store_true', default=False)
     
-    args_parser.add_argument('--log-level', help='log level', choices=logging._levelToName.keys(), default='INFO')
+    # args_parser.add_argument('--log-level', help='log level', choices=logging._levelToName.keys(), default='INFO')
     
     args = args_parser.parse_args(argv)
 
