@@ -4,3 +4,31 @@ services:
     image: alpine-repo-indexer
     build:
       context: src
+      dockerfile: Dockerfile
+    volumes:
+    # - "./tmp/incoming:/mnt/incoming"
+    - "./tmp/repo/x86_64:/mnt/repo"
+    environment: 
+    # - UPLOADED_FILES_PATH=/mnt/incoming
+    - REPOISOTRY_PATH=/mnt/repo
+    - CLEAN_ON_STRARTUP=TRUE
+    hostname: indexer
+  repo-httpd:
+    image: httpd:2.4-alpine
+    hostname: alpine-repo
+    ports: 
+    - 80:80
+    volumes: 
+    - "./tmp/repo:/usr/local/apache2/htdocs/:ro"
+  # repo-nginx:
+  #   image: nginx:alpine
+  #   hostname: alpine-repo
+  #   ports: 
+  #     - 80:80
+  #   volumes:
+  #   - "./tmp/repo:/usr/share/nginx/html"
+  test-untrusted:
+    image: alpine
+    command: "echo http://alpine-repo > /etc/apk/repository && apk update && apk add bash"
+    depends_on: 
+    - repo-httpd

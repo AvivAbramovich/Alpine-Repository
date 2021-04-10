@@ -8,3 +8,12 @@ ARCHITECURES = [
     'ppc64le',
     's390x'
 ]
+
+class NullFileDisposible:
+    def __enter__(self):
+        return self
+    def __exit__(self, type, value, traceback):
+        pass
+    @property
+    def name(self):
+        return None

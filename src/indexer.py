@@ -2,7 +2,7 @@ from os import unlink
 from os.path import isdir, isfile
 from uuid import uuid4
 from subprocess import Popen, PIPE
-from common import ARCHITECURES
+from .common import ARCHITECURES
 import logging
 import shutil
 
