@@ -1,15 +1,13 @@
 version: '3.8'
 services: 
   indexer:
-    image: alpine-repo-indexer
+    image: avivabramovich/alpine-repository:indexer
     build:
       context: src
       dockerfile: Dockerfile
     volumes:
-    # - "./tmp/incoming:/mnt/incoming"
     - "./tmp/repo/x86_64:/mnt/repo"
     environment: 
-    # - UPLOADED_FILES_PATH=/mnt/incoming
     - REPOISOTRY_PATH=/mnt/repo
     - CLEAN_ON_STRARTUP=TRUE
     hostname: indexer
