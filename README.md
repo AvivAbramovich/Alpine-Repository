@@ -118,5 +118,5 @@ services:
     - '80:80'
     - '5000:5000'
     volumes:
-    - '/path/to/repo:/repo'
+    - "/path/to/repo/root:/usr/local/apache2/htdocs/"
 ```

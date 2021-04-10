@@ -5,7 +5,9 @@ argv = bulk_apply([
     Argument('REPOISOTRY_PATH', func=positional_argument_func),
     Argument('MAX_CONTENT_LENGTH', '--max-content-length'),
     Argument('CLEAN_ON_STRARTUP', '--clean', func=flag_argument_func),
+    Argument('PRIV_KEY_PATH', '--priv-key-file'),
     Argument('INDEXER_PORT', '-p'),
+    Argument('LOG_LEVEL', '--log-level'),
     Argument('ARCH', '--arch')
 ])
 

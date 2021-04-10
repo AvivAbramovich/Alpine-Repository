@@ -4,11 +4,12 @@ import logging
 from uuid import uuid4
 from argparse import ArgumentParser
 from flask import Flask, flash, request, redirect, make_response
+from flask.logging import create_logger
 from werkzeug.utils import secure_filename
 
 from . import common, indexer
 
-ALLOWED_EXTENSIONS = {'apk', 'txt'}
+ALLOWED_EXTENSIONS = {'apk'}
 
 app = Flask(__name__)
 app.secret_key = str(uuid4())
@@ -80,14 +81,15 @@ def main(argv=None):
     args_parser.add_argument('-p', help='listening port', type=int, default=80)
     args_parser.add_argument('--clean', help='clean all files from repository folder before begin listening', action='store_true', default=False)
     
-    # args_parser.add_argument('--log-level', help='log level', choices=logging._levelToName.keys(), default='INFO')
+    args_parser.add_argument('--log-level', help='log level', choices=logging._levelToName.values(), default='INFO')
     
     args = args_parser.parse_args(argv)
 
-    # app.logger.setLevel(getattr(logging, args.log_level))
-    # app.logger.debug(args)
+    logger = create_logger(app)
 
-    # app.config['UPLOAD_FOLDER'] = args.uploaded_folder
+    logger.setLevel(getattr(logging, args.log_level))
+    logger.debug(args)
+
     if args.max_content_length is not None:
         app.config['MAX_CONTENT_LENGTH'] = args.max_content_length
     
@@ -99,7 +101,7 @@ def main(argv=None):
 
     with _get_private_key_handle(args.priv_key_file, args.priv_key) as priv_key_handle:
 
-        index_repo = lambda: indexer.index_repository(args.repo_path, args.arch, logger=app.logger,
+        index_repo = lambda: indexer.index_repository(args.repo_path, args.arch, logger=logger,
             private_key_file_path=priv_key_handle.name, command_timeout=args.command_timeout)
 
         app.config['repo_path'] = args.repo_path
