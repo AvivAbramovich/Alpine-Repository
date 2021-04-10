@@ -18,6 +18,17 @@ services:
     - 80:80
     volumes: 
     - "./tmp/repo:/usr/local/apache2/htdocs/:ro"
+  indexer_httpd:
+    image: avivabramovich/alpine-repository:httpd
+    build:
+      context: src
+      dockerfile: httpd.Dockerfile
+    volumes:
+    - "./tmp/repo/x86_64:/mnt/repo"
+    environment: 
+    - REPOISOTRY_PATH=/mnt/repo
+    - CLEAN_ON_STRARTUP=TRUE
+    hostname: indexer
   .tests:
     image: alpine
     environment: 

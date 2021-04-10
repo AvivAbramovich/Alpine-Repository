@@ -104,3 +104,18 @@ services:
     - '80:80'
     volumes: 
     - '/path/to/repo:/usr/local/apache2/htdocs/:ro'
+```
+
+### Indexer+httpd variant
+
+```yaml
+version: '3.8'
+services: 
+  indexer:
+    image: avivabramovich/alpine-repository:httpd
+    ports:
+    - '80:80'
+    - '5000:5000'
+    volumes:
+    - '/path/to/repo:/repo'
+```
