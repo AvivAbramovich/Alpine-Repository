@@ -2,7 +2,7 @@
 
 Deploy your own Alpine Linux packages repository with uploading server and auto indexing!
 
-[Github](https://github.com/AvivAbramovich/Alpine-Repository/tree/dev)
+[Github](https://github.com/AvivAbramovich/Alpine-Repository)
 
 ## Supported tags
 * `latest`, `indexer-0.1`, `indexer`
@@ -37,7 +37,7 @@ Now, upload some packages to your repo
     # fetched 6 packages
 
     # upload a single package
-    curl -X POST -F "file=@bash-5.1.0-r0.apk http://your_repo/upload
+    curl -X POST -F "file=@bash-5.1.0-r0.apk http://your_repo/upload"
 
     # use bulk_upload to upload all packages in  directory
     curl -X POST $(for f in *.apk; do echo -F "file=@$f"; done) http://your_repo/bulk_upload
