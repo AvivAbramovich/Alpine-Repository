@@ -33,14 +33,14 @@ And serve the repository files (in this example, using httpd):
 Now, upload some packages to your repo
 
 ```sh
-    apk fetch -R bash
-    # fetched 6 packages
+apk fetch -R bash
+# fetched 6 packages
 
-    # upload a single package
-    curl -X POST -F "file=@bash-5.1.0-r0.apk http://your_repo/upload"
+# upload a single package
+curl -X POST -F "file=@bash-5.1.0-r0.apk http://your_repo/upload"
 
-    # use bulk_upload to upload all packages in  directory
-    curl -X POST $(for f in *.apk; do echo -F "file=@$f"; done) http://your_repo/bulk_upload
+# use bulk_upload to upload all packages in  directory
+curl -X POST $(for f in *.apk; do echo -F "file=@$f"; done) http://your_repo/bulk_upload
 ```
 
 Now, configure your alpine machine/container to use your new repository
