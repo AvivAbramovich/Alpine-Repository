@@ -20,15 +20,25 @@ services:
     - 80:80
     volumes: 
     - "./tmp/repo:/usr/local/apache2/htdocs/:ro"
-  # repo-nginx:
-  #   image: nginx:alpine
-  #   hostname: alpine-repo
-  #   ports: 
-  #     - 80:80
-  #   volumes:
-  #   - "./tmp/repo:/usr/share/nginx/html"
-  test-untrusted:
+  .tests:
     image: alpine
-    command: "echo http://alpine-repo > /etc/apk/repository && apk update && apk add bash"
+    environment: 
+    - PACKAGE_NAME=bash
+    - REPO_URL=http://alpine-repo
+    volumes:
+    - "./scripts:/scripts"
+  test-upload:
+    extends: .tests
+    command: "sh /scripts/uploader.sh ${PACKAGE_NAME} indexer"
+    depends_on:
+    - indexer
+  test-add-untrusted:
+    extends: .tests
+    command: 'sh -c "sh /scripts/configure-untrusted.sh ${REPO_URL} && apk add ${PACKAGE_NAME} --allow-untrusted"'
+    depends_on: 
+    - repo-httpd
+  test-add-trusted:
+    extends: .tests
+    command: 'sh -c "sh /scripts/configure-trusted.sh ${REPO_URL} && apk add ${PACKAGE_NAME}"'
     depends_on: 
     - repo-httpd
