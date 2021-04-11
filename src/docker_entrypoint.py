@@ -8,7 +8,7 @@ argv = bulk_apply([
     Argument('PRIV_KEY_PATH', '--priv-key-file'),
     Argument('INDEXER_PORT', '-p'),
     Argument('LOG_LEVEL', '--log-level'),
-    Argument('ARCH', '--arch')
+    Argument('DEFAULT_ARCH', '--default-arch')
 ])
 
 main(argv)
