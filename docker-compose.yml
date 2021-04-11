@@ -22,6 +22,30 @@ services:
     - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
     - LOG_LEVEL=DEBUG
     hostname: indexer
+  proxy_indexer:
+    image: avivabramovich/alpine-repository:indexer
+    ports:
+    - '80:80'
+    volumes:
+    - './tmp/repo/x86_64:/mnt/repo'
+    environment: 
+    - PROXY=TRUE
+    - PROXY_REPO_URL=http://172.17.0.1:8081/repository/test
+    - PROXY_CREDENTIALS=aviv:1
+    - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
+    - LOG_LEVEL=DEBUG
+    hostname: indexer
+  indexer_trusted:
+    image: avivabramovich/alpine-repository:indexer
+    volumes:
+    - './tmp/keys:/mnt/keys:ro'
+    environment: 
+    - PROXY=TRUE
+    - PROXY_REPOSITORY_URL=http://172.17.0.1:8081/repository/test
+    - PROXY_CREDENTIALS=aviv:1
+    - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
+    - LOG_LEVEL=DEBUG
+    hostname: indexer
   repo-httpd:
     image: httpd:2.4-alpine
     hostname: alpine-repo
