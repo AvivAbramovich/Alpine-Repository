@@ -1,4 +1,6 @@
-
+'''
+Index apline packages repository
+'''
 import logging
 import shutil
 import tarfile
@@ -6,8 +8,8 @@ from os import unlink, listdir, mkdir
 from os.path import isdir, isfile, join
 from uuid import uuid4
 from subprocess import Popen, PIPE
-from .common import ARCHITECURES
 from io import BytesIO
+from .common import ARCHITECURES
 
 
 class Indexer:
@@ -22,7 +24,7 @@ class Indexer:
         self.logger.debug('stdout: %s', stdout.decode('utf-8'))
         if status_code != 0:
             raise Exception('Command "%s" failed: %s' % (cmdline, stderr.decode('utf-8')))
-    
+
     @staticmethod
     def extract_index(index_tar_path):
         with tarfile.open(index_tar_path, 'r:gz') as f:
@@ -54,10 +56,10 @@ class Indexer:
         unlink(index_path)
         with tarfile.open(index_path, 'w:gz') as f:
             data = index.encode('utf-8')
-            io = BytesIO(data)
+            fileobj = BytesIO(data)
             info = tarfile.TarInfo(name="APKINDEX")
             info.size=len(data)
-            f.addfile(tarinfo=info, fileobj=io)
+            f.addfile(tarinfo=info, fileobj=fileobj)
 
     def add_directory_to_index(self, directory, architecture='x86_64'):
         packages = [join(directory, name) for name in listdir(directory) if name.endswith('.apk')]
@@ -79,9 +81,8 @@ class Indexer:
             raise Exception('Invalid archtecture "%s"' % rewrite_architecture)
         if not isdir(repository_path):
             mkdir(repository_path)
-        
-        # TODO: create it in some tmp directory
-        index_path = 'APKINDEX-%s.tar.gz' % uuid4()
+
+        index_path = join('/tmp', 'APKINDEX-%s.tar.gz' % uuid4())
 
         try:
             self.logger.info('Creating temp index file: %s', index_path)
@@ -89,7 +90,7 @@ class Indexer:
             if rewrite_architecture:
                 cmdline += ' --rewrite-arch ' + rewrite_architecture
             self._run_command(cmdline.format(index_path=index_path, repo=repository_path))
-                        
+
             self.logger.info('Replace old index with new one')
             shutil.move(index_path, '{repo}/APKINDEX.tar.gz'.format(repo=repository_path))
         finally:

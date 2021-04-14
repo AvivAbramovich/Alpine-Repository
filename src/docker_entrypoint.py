@@ -1,4 +1,7 @@
-from env2cli import Argument, positional_argument_func, flag_argument_func, bulk_apply
+"""
+docker entrypoint (converts envs to arguments)
+"""
+from env2cli import Argument, flag_argument_func, bulk_apply
 from .app import main
 
 argv = bulk_apply([
@@ -9,9 +12,10 @@ argv = bulk_apply([
     Argument('INDEXER_PORT', '-p'),
     Argument('LOG_LEVEL', '--log-level'),
     Argument('DEFAULT_ARCH', '--default-arch'),
-    Argument('PROXY', '--proxy', func=flag_argument_func),
-    Argument('PROXY_REPO_URL', '--proxy-repo-url'),
-    Argument('PROXY_CREDENTIALS', '--proxy-credentials')
+    Argument('REMOTE', '--remote', func=flag_argument_func),
+    Argument('REMOTE_REPO_URL', '--remote-repo-url'),
+    Argument('REMOTE_USERNAME', '--remote-username'),
+    Argument('REMOTE_PASSWORD', '--remote-password')
 ])
 
 main(argv)
