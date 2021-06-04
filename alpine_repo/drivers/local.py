@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Dict, List
 
 from alpine_repo.drivers import IDriver, register_driver
 from alpine_repo.common import ARCHITECURES, ILoggerSettable
@@ -32,19 +32,19 @@ class LocalDriver(IDriver, ILoggerSettable):
     def name(cls):
         return cls._DRIVER_NAME
 
-    @property
-    def index_file(self) -> Path:
-        return self.path / 'APKINDEX.tar.gz'
+    def index_file(self, architecture) -> Path:
+        return self.path / architecture / 'APKINDEX.tar.gz'
 
-    def _index_exists(self):
-        return self.index_file.is_file()
+    def _index_exists(self, architecture):
+        return self.index_file(architecture).is_file()
 
-    def _build_index(self, repo_path, architecture):
-        self.logger.info('Build index for "%s" (arch: %s)', repo_path, architecture)
-        return self.indexer.build_index(repo_path, architecture)
+    def _build_index(self, architecture):
+        self.logger.info('Build index for "%s"', architecture)
+        return self.indexer.build_index(self.path / architecture, architecture)
 
     def _update_index(self, packages, architecture):
-        self.indexer.update_index(self.index_file, *packages, architecture)
+        self.logger.info('Updating index for repository "%s" with new %d packages', architecture, len(packages))
+        self.indexer.update_index(self.index_file(architecture), *packages, architecture)
 
     def _sign_index(self):
         self.indexer.sign_index(self.index_file, self.private_key)
@@ -58,15 +58,16 @@ class LocalDriver(IDriver, ILoggerSettable):
         for filename, file in files.items():
             package_path = repo_path / filename
 
+            self.logger.info('Add package "%s" to "%s" repository', filename, architecture)
             file.save(package_path)
 
             packages_paths.append(package_path)
 
         try:
-            if self._index_exists():
+            if self._index_exists(architecture):
                 self._update_index(packages_paths, architecture)
             else:
-                self._build_index(repo_path, architecture)
+                self._build_index(architecture)
 
             if self.private_key:
                 self._sign_index()
@@ -81,11 +82,14 @@ class LocalDriver(IDriver, ILoggerSettable):
         return self._build_index(architecture)
 
     def clean_repository(self):
+        self.logger.info('Cleaning up repositories')
         # cleanup all files from repo
         for arch in ARCHITECURES:
             arch_dir = self.path / arch
             if arch_dir.is_dir():
+                self.logger.info('Cleaning up repository "%s"', arch)
                 for f in arch_dir.glob('**/*'):
+                    self.logger.info('Unlink "%s"', f)
                     f.unlink()
 
     def set_logger(self, logger: logging.Logger):
