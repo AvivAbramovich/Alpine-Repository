@@ -1,47 +1,41 @@
 version: '3.8'
-services: 
+services:
   indexer:
-    image: avivabramovich/alpine-repository:indexer
+    image: avivabramovich/alpine-repository
     build:
-      context: src
+      context: alpine_repo
       dockerfile: Dockerfile
+  indexer-local:
+    image: avivabramovich/alpine-repository
     volumes:
-    - './tmp/repo/x86_64:/mnt/repo'
-    environment: 
-    - REPOISOTRY_PATH=/mnt/repo
-    - CLEAN_ON_STRARTUP=TRUE
+    - './tmp/repo:/mnt/repo'
+    ports:
+    - "5000:80"
+    environment:
+    - ALPINE_REPO_DRIVER=local
+    - ALPINE_REPO_DRIVER_OPTIONS=path=/mnt/repo
+    - ALPINE_REPO_CLEAN_ON_STARTUP=TRUE
     hostname: indexer
-  indexer_trusted:
-    image: avivabramovich/alpine-repository:indexer
+  indexer-local_trusted:
+    image: avivabramovich/alpine-repository
     volumes:
     - './tmp/repo/x86_64:/mnt/repo'
     - './tmp/keys:/mnt/keys:ro'
     environment: 
-    - REPOISOTRY_PATH=/mnt/repo
-    - CLEAN_ON_STRARTUP=TRUE
-    - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
+    - DRIVER=local
+    - DRIVER_OPTIONS='PATH="/mnt/repo",CLEAN_ON_STARTUP="TRUE",PRIV_KEY_PATH="/mnt/keys/test-keys@avivabramovich@gmail.com.rsa"'
     - LOG_LEVEL=DEBUG
     hostname: indexer
-  proxy_indexer:
-    image: avivabramovich/alpine-repository:indexer
+  indexer-remote-trusted:
+    image: avivabramovich/alpine-repository
     ports:
     - '80:80'
     volumes:
     - './tmp/repo/x86_64:/mnt/repo'
-    environment: 
-    - PROXY=TRUE
-    - PROXY_REPO_URL=http://172.17.0.1:8081/repository/test
-    - PROXY_CREDENTIALS=aviv:1
-    - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
-    - LOG_LEVEL=DEBUG
-    hostname: indexer
-  indexer_trusted:
-    image: avivabramovich/alpine-repository:indexer
-    volumes:
     - './tmp/keys:/mnt/keys:ro'
     environment: 
     - PROXY=TRUE
-    - PROXY_REPOSITORY_URL=http://172.17.0.1:8081/repository/test
+    - PROXY_REPO_URL=http://172.17.0.1:8081/repository/test
     - PROXY_CREDENTIALS=aviv:1
     - PRIV_KEY_PATH=/mnt/keys/test-keys@avivabramovich@gmail.com.rsa
     - LOG_LEVEL=DEBUG
@@ -53,18 +47,18 @@ services:
     - 80:80
     volumes: 
     - "./tmp/repo:/usr/local/apache2/htdocs/:ro"
-  indexer_httpd:
-    image: avivabramovich/alpine-repository:httpd
-    build:
-      context: src
-      dockerfile: httpd.Dockerfile
-    ports:
-    - '80:80'
-    - '5000:5000'
-    volumes:
-    - "./tmp/repo:/usr/local/apache2/htdocs/"
-    environment: 
-    - CLEAN_ON_STRARTUP=TRUE
+#  indexer_httpd:
+#    image: avivabramovich/alpine-repository:httpd
+#    build:
+#      context: alpine_repo
+#      dockerfile: httpd.Dockerfile
+#    ports:
+#    - '80:80'
+#    - '5000:5000'
+#    volumes:
+#    - "./tmp/repo:/usr/local/apache2/htdocs/"
+#    environment:
+#    - CLEAN_ON_STARTUP=TRUE
   .tests:
     image: alpine
     environment: 
