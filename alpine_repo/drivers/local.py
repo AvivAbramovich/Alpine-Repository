@@ -46,8 +46,8 @@ class LocalDriver(IDriver, ILoggerSettable):
         self.logger.info('Updating index for repository "%s" with new %d packages', architecture, len(packages))
         self.indexer.update_index(self.index_file(architecture), *packages, architecture)
 
-    def _sign_index(self):
-        self.indexer.sign_index(self.index_file, self.private_key)
+    def _sign_index(self, architecture):
+        self.indexer.sign_index(self.index_file(architecture), self.private_key)
 
     def add_package(self, filename: str, storage: FileStorage, architecture: str):
         return self.add_packages({filename: storage}, architecture)
@@ -70,7 +70,7 @@ class LocalDriver(IDriver, ILoggerSettable):
                 self._build_index(architecture)
 
             if self.private_key:
-                self._sign_index()
+                self._sign_index(architecture)
         except:
             # rollback
             for package_path in packages_paths:
